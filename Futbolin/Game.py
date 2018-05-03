@@ -108,17 +108,17 @@ class Game(threading.Thread):
 
     class LocalGoal(MotionListener):
         def __init__(self, game):
-            self.__game = game
+            self.game = game
 
         def motion(self):
-            self.__game.addLocalScore()
+            self.game.addLocalScore()
 
     class VisitorGoal(MotionListener):
         def __init__(self, game):
-            self.__game = game
+            self.game = game
 
         def motion(self):
-            self.__game.addVisitorScore()
+            self.game.addVisitorScore()
 
     class RestartGame(MotionListener):
         def __init__(self, game):

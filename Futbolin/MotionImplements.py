@@ -1,7 +1,6 @@
 import json
 import os
 import time
-
 from Music import Music
 from Game import Game
 
@@ -18,9 +17,11 @@ class LocalGoalSound(Game.LocalGoal):
         self.__music = Music(musicFolder)
 
     def motion(self):
+        finish = self.game.gameFinish()
         Game.LocalGoal.motion(self)
-        print("GOOL local!")
-        self.__music.random()
+        if not finish:
+            print("GOOL local!")
+            self.__music.random()
 
 class VisitorGoalSound(Game.VisitorGoal):
     def __init__(self, game):
@@ -35,9 +36,11 @@ class VisitorGoalSound(Game.VisitorGoal):
         self.__music = Music(musicFolder)
 
     def motion(self):
+        finish = self.game.gameFinish()
         Game.VisitorGoal.motion(self)
-        print("GOOL Visitant!")
-        self.__music.random()
+        if not finish:
+            print("GOOL Visitant!")
+            self.__music.random()
 
 class RestartGoalSound(Game.RestartGame):
     def __init__(self, game):
@@ -78,7 +81,7 @@ class StopGame(Game.StopGame):
         print("PowerOff raspberry!")
         #W8 to finish the sound
         while self.__music.isPlayingMusic():
-            time.sleep(0.8)
+            time.sleep(0.3)
 
         #When the song finish
-        #os.system("poweroff")
+        os.system("poweroff")

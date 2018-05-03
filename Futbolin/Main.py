@@ -21,3 +21,5 @@ if __name__ == "__main__":
         if result != game.getResult():
             result = game.getResult()
             print(result)
+
+        time.sleep(0.3)
