@@ -1,10 +1,11 @@
 import json
 import os
+import threading
 from MotionListener import MotionListener
 from MotionSensor import MotionSensor
 
 
-class Game:
+class Game(threading.Thread):
     SETTINGS_FILE = "settings.json"
     def __init__(self):
         #Default 7 balls, without sensors
@@ -70,17 +71,28 @@ class Game:
     def isPlaying(self):
         return self.__playing
 
+    def gameFinish(self):
+        return (self.__visitorScore + self.__localScore) == self.__balls
+
     def addLocalScore(self):
-        self.__localScore += 1
+        if not self.gameFinish():
+            self.__localScore += 1
 
     def addVisitorScore(self):
-        self.__visitorScore += 1
+        if not self.gameFinish():
+            self.__visitorScore += 1
+
+    def getResult(self):
+        return str(self.__localScore) + " - " + str(self.__visitorScore)
 
     def getLocalScore(self):
         return self.__localScore
 
     def getVisitorScore(self):
         return self.__visitorScore
+
+    def getTotalBalls(self):
+        return self.__balls
 
     def setLocalSensorListener(self, listener):
         self.__localSensor.setMotionListener(listener)
