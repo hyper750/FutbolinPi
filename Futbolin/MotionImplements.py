@@ -84,4 +84,4 @@ class StopGame(Game.StopGame):
             time.sleep(0.3)
 
         #When the song finish, poweroff
-        os.system("poweroff")
+        #os.system("poweroff")
