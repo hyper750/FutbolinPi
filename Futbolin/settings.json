@@ -1,0 +1,10 @@
+{
+  "musicFolder" : "Music",
+  "restartSound" : "silbato.mp3",
+  "powerOffSound" : "poweroff.mp3",
+  "balls" : 7,
+  "localPin" : 4,
+  "visitorPin" : 17,
+  "restartPin" : 27,
+  "stopPin" : 22
+}
