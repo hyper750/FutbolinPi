@@ -22,4 +22,4 @@ if __name__ == "__main__":
             result = game.getResult()
             print(result)
 
-        time.sleep(0.3)
+        time.sleep(0.1)

@@ -83,5 +83,5 @@ class StopGame(Game.StopGame):
         while self.__music.isPlayingMusic():
             time.sleep(0.3)
 
-        #When the song finish
+        #When the song finish, poweroff
         os.system("poweroff")
