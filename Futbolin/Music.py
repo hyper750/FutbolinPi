@@ -7,25 +7,26 @@ from pygame import mixer
 
 class Music:
     MUSIC_EXTENSIONS = ("mp3", "wav", "ogg", "oga", "mogg", "wma")
+    RANDOM_FOLDER = "Random"
+
     def __init__(self, musicFolder):
         self.__musicFolder = musicFolder
-        self.__musicFiles = [obj for obj in listdir(self.__musicFolder)
-                             if isfile(join(self.__musicFolder, obj)) and obj.__str__().split(".")[-1] in self.MUSIC_EXTENSIONS]
+        self.__randomMusic = [obj for obj in listdir(self.__musicFolder + "/" + self.RANDOM_FOLDER)
+                              if isfile(join(self.__musicFolder + "/" + self.RANDOM_FOLDER, obj)) and obj.__str__().split(".")[-1] in self.MUSIC_EXTENSIONS]
         mixer.init()
 
 
     def random(self):
-        if len(self.__musicFiles) > 0:
-
-            musicFiles = [obj for obj in listdir(self.__musicFolder)
-                          if isfile(join(self.__musicFolder, obj)) and obj.__str__().split(".")[-1] in self.MUSIC_EXTENSIONS]
-            randomNum = randint(0, len(musicFiles)-1)
-            randomMusic = musicFiles[randomNum]
-            mixer.music.load(self.__musicFolder + "/" + randomMusic)
+        if len(self.__randomMusic) > 0:
+            mixer.music.stop()
+            randomNum = randint(0, len(self.__randomMusic)-1)
+            randomMusic = self.__randomMusic[randomNum]
+            mixer.music.load(self.__musicFolder + "/" + self.RANDOM_FOLDER + "/" + randomMusic)
             mixer.music.play()
 
     def play(self, sound):
-        if sound in self.__musicFiles:
+        mixer.music.stop()
+        if sound in self.__randomMusic:
             mixer.music.load(self.__musicFolder + "/" + sound)
             mixer.music.play()
 
