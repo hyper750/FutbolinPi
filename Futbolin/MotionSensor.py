@@ -5,7 +5,7 @@ from MotionListener import MotionListener
 
 
 class MotionSensor(threading.Thread):
-    POLLING_TIME = 0.1
+    POLLING_TIME = 0.001
     #Una vegada sa configuracio
     gpio.setmode(gpio.BCM)
     def __init__(self, pin):
