@@ -1,5 +1,5 @@
 from os import listdir
-from os.path import isfile, join
+from os.path import isfile, join, exists
 from random import randint
 from pygame import mixer
 
@@ -18,15 +18,13 @@ class Music:
 
     def random(self):
         if len(self.__randomMusic) > 0:
-            mixer.music.stop()
             randomNum = randint(0, len(self.__randomMusic)-1)
             randomMusic = self.__randomMusic[randomNum]
             mixer.music.load(self.__musicFolder + "/" + self.RANDOM_FOLDER + "/" + randomMusic)
             mixer.music.play()
 
     def play(self, sound):
-        mixer.music.stop()
-        if sound in self.__randomMusic:
+        if exists(self.__musicFolder + "/" + sound):
             mixer.music.load(self.__musicFolder + "/" + sound)
             mixer.music.play()
 

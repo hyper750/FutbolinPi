@@ -81,7 +81,7 @@ class StopGame(Game.StopGame):
         print("PowerOff raspberry!")
         #W8 to finish the sound
         while self.__music.isPlayingMusic():
-            time.sleep(0.1)
+            time.sleep(0.5)
 
         #When the song finish, poweroff
         os.system("poweroff")
