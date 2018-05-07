@@ -1,19 +1,17 @@
-import json
-import os
 import threading
 from MotionListener import MotionListener
 from MotionSensor import MotionSensor
 
 
 class Game(threading.Thread):
-    SETTINGS_FILE = "settings.json"
-    def __init__(self):
+    def __init__(self, balls, localPin, visitorPin, restartPin, stopPin):
+        threading.Thread.__init__(self)
         #Default 7 balls, without sensors
-        self.__balls = 7
-        self.__localSensor = None
-        self.__visitorSensor = None
-        self.__restartSensor = None
-        self.__stopSensor = None
+        self.__balls = balls
+        self.__localSensor = MotionSensor(localPin)
+        self.__visitorSensor = MotionSensor(visitorPin)
+        self.__restartSensor = MotionSensor(restartPin)
+        self.__stopSensor = MotionSensor(stopPin)
 
         self.__playing = False
 
@@ -21,21 +19,7 @@ class Game(threading.Thread):
         self.__localScore = 0
         self.__visitorScore = 0
 
-        #Importing settings
-        if os.path.exists(self.SETTINGS_FILE):
-            with open(self.SETTINGS_FILE, "r") as file:
-                jsonFile = json.loads(file.read())
-                self.__balls = int(jsonFile["balls"])
-                self.__localSensor = MotionSensor(int(jsonFile["localPin"]))
-                self.__visitorSensor = MotionSensor(int(jsonFile["visitorPin"]))
-                self.__restartSensor = MotionSensor(int(jsonFile["restartPin"]))
-                self.__stopSensor = MotionSensor(int(jsonFile["stopPin"]))
-
-        else:
-            print(self.SETTINGS_FILE + " NOT FOUND")
-
         #Default listeners
-
         # What to do when a goal is scored
         self.setLocalSensorListener(Game.LocalGoal(self))
         self.setVisitorSensorListener(Game.VisitorGoal(self))

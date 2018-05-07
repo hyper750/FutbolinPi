@@ -1,16 +1,18 @@
 import json
 import os
 import time
+from Futbolin import Main
 from Music import Music
 from Game import Game
+from Main import SETTINGS
 
 class LocalGoalSound(Game.LocalGoal):
     def __init__(self, game):
         Game.LocalGoal.__init__(self, game)
         #Default
         musicFolder = "Music"
-        if os.path.exists(Game.SETTINGS_FILE):
-            with open(Game.SETTINGS_FILE, "r") as file:
+        if os.path.exists(Main):
+            with open(SETTINGS, "r") as file:
                 jsonFile = json.loads(file.read())
                 musicFolder = jsonFile["musicFolder"]
 
@@ -28,8 +30,8 @@ class VisitorGoalSound(Game.VisitorGoal):
         Game.VisitorGoal.__init__(self, game)
         #Default
         musicFolder = "Music"
-        if os.path.exists(Game.SETTINGS_FILE):
-            with open(Game.SETTINGS_FILE, "r") as file:
+        if os.path.exists(SETTINGS):
+            with open(SETTINGS, "r") as file:
                 jsonFile = json.loads(file.read())
                 musicFolder = jsonFile["musicFolder"]
 
@@ -48,8 +50,8 @@ class RestartGoalSound(Game.RestartGame):
         #Default
         musicFolder = "Music"
         self.__restartSound = "restart.mp3"
-        if os.path.exists(Game.SETTINGS_FILE):
-            with open(Game.SETTINGS_FILE, "r") as file:
+        if os.path.exists(SETTINGS):
+            with open(SETTINGS, "r") as file:
                 jsonFile = json.loads(file.read())
                 musicFolder = jsonFile["musicFolder"]
                 self.__restartSound = jsonFile["restartSound"]
@@ -67,8 +69,8 @@ class StopGame(Game.StopGame):
         #Default
         musicFolder = "Music"
         self.__stopSound = "restart.mp3"
-        if os.path.exists(Game.SETTINGS_FILE):
-            with open(Game.SETTINGS_FILE, "r") as file:
+        if os.path.exists(SETTINGS):
+            with open(SETTINGS, "r") as file:
                 jsonFile = json.loads(file.read())
                 musicFolder = jsonFile["musicFolder"]
                 self.__stopSound = jsonFile["powerOffSound"]

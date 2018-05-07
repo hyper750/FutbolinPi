@@ -1,11 +1,19 @@
+import json
 import time
 from Game import Game
 from MotionImplements import LocalGoalSound, VisitorGoalSound, RestartGoalSound, StopGame
 
-
+SETTINGS = "settings.json"
 
 if __name__ == "__main__":
-    game = Game()
+    with open(SETTINGS, "r") as file:
+        jsonFile = json.loads(file.read())
+        balls = int(jsonFile["balls"])
+        localSensor = int(jsonFile["localPin"])
+        visitorSensor = int(jsonFile["visitorPin"])
+        restartSensor = int(jsonFile["restartPin"])
+        stopSensor = int(jsonFile["stopPin"])
+    game = Game(balls, localSensor, visitorSensor, restartSensor, stopSensor)
     #When you score a goal
     game.setLocalSensorListener(LocalGoalSound(game))
     game.setVisitorSensorListener(VisitorGoalSound(game))
