@@ -1,10 +1,11 @@
 import threading
+from SongPooling import SongPooling
 from MotionListener import MotionListener
 from MotionSensor import MotionSensor
 
 
 class Game(threading.Thread):
-    def __init__(self, balls, localPin, visitorPin, restartPin, stopPin):
+    def __init__(self, balls, localPin, visitorPin, restartPin, stopPin, folder, booSound, booTime):
         threading.Thread.__init__(self)
         #Default 7 balls, without sensors
         self.__balls = balls
@@ -12,6 +13,7 @@ class Game(threading.Thread):
         self.__visitorSensor = MotionSensor(visitorPin)
         self.__restartSensor = MotionSensor(restartPin)
         self.__stopSensor = MotionSensor(stopPin)
+        self.__jeer = SongPooling(folder, booSound, booTime)
 
         self.__playing = False
 
@@ -39,6 +41,7 @@ class Game(threading.Thread):
         self.__visitorSensor.start()
         self.__restartSensor.start()
         self.__stopSensor.start()
+        self.__jeer.start()
         self.__playing = True
 
     def stop(self):
@@ -46,6 +49,7 @@ class Game(threading.Thread):
         self.__visitorSensor.stopThread()
         self.__restartSensor.stopThread()
         self.__stopSensor.stopThread()
+        self.__jeer.stopThread()
         self.__playing = False
 
     def restart(self):
@@ -89,6 +93,9 @@ class Game(threading.Thread):
 
     def setStopSensorListener(self, listener):
         self.__stopSensor.setMotionListener(listener)
+
+    def setRestartBooListener(self, listener):
+        self.__jeer.setRestartListener(listener)
 
     class LocalGoal(MotionListener):
         def __init__(self, game):

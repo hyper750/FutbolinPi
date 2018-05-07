@@ -3,13 +3,14 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk
 import os
 
-class MyWindow(Gtk.Window):
+class MainWindow(Gtk.Window):
 
-    def __init__(self):
+    def __init__(self, gifFolder):
         Gtk.Window.__init__(self)
+        self.gifFolder = gifFolder
         self.set_name("mainWindow")
         self.set_title("Futbolin")
-        self.set_icon_from_file("Images/icon64.png")
+        self.set_icon_from_file("Image/icon64.png")
         self.connect("destroy", Gtk.main_quit)
         self.set_default_size(600, 800)
         #self.set_position(Gtk.WIN_POS_CENTER)
@@ -40,10 +41,16 @@ class MyWindow(Gtk.Window):
         self.scoreLabel.set_hexpand(True)
         layout.attach(self.scoreLabel, 0, 0, 1, 1)
 
+
         #Gif widgets
-        self.gifViewer = Gtk.
+        self.gifViewer = Gtk.Image()
+        self.gifViewer.set_name("gifViewer")
+        #self.gifViewer.set_from_file("Gif/propia.gif")
+        self.gifViewer.set_hexpand(True)
+        layout.attach(self.gifViewer, 0, 1, 1, 1)
 
-
+        self.show_all()
+        self.gifViewer.set_visible(False)
 
         #X Column, Y Row, Width, Height
         '''layout.attach(gtk.Button("Hola"), 0, 0, 1, 1)
@@ -66,8 +73,15 @@ class MyWindow(Gtk.Window):
     def setText(self, text):
         self.scoreLabel.set_text(text)
 
+    def setGif(self, gif):
+        self.gifViewer.set_from_file(gif)
 
-if __name__ == '__main__':
-    win = MyWindow()
-    win.show_all()
-    Gtk.main()
+    def finishWindow(self):
+        self.destroy()
+        Gtk.main_quit()
+
+
+
+'''if __name__ == '__main__':
+    win = MainWindow("")
+    Gtk.main()'''
