@@ -5,9 +5,8 @@ import os
 
 class MainWindow(Gtk.Window):
 
-    def __init__(self, gifFolder):
+    def __init__(self):
         Gtk.Window.__init__(self)
-        self.gifFolder = gifFolder
         self.set_name("mainWindow")
         self.set_title("Futbolin")
         self.set_icon_from_file("Image/icon64.png")
@@ -75,6 +74,9 @@ class MainWindow(Gtk.Window):
 
     def setGif(self, gif):
         self.gifViewer.set_from_file(gif)
+
+    def visibleGifView(self, boolean):
+        self.gifViewer.set_visible(boolean)
 
     def finishWindow(self):
         self.destroy()

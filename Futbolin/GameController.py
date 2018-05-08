@@ -1,6 +1,8 @@
 import json
 import os
+import threading
 import time
+from RandomGif import RandomGif
 from RestartListener import RestartListener
 from Music import Music
 from Game import Game
@@ -23,7 +25,9 @@ class GameController:
             booTime = jsonFile["booSoundTime"]
             gifFolder = jsonFile["gifFolder"]
 
-        self.view = MainWindow(gifFolder)
+
+
+        self.view = MainWindow()
 
         self.game = Game(balls, localSensor, visitorSensor, restartSensor, stopSensor, musicFolder, booSound, booTime)
         # When you score a goal
@@ -60,12 +64,28 @@ class LocalGoalSound(Game.LocalGoal):
 class LocalGoalGraphic(LocalGoalSound):
     def __init__(self, game, view):
         LocalGoalSound.__init__(self, game)
-        self.view = view
+        self.__view = view
+
+        if os.path.exists(GameController.SETTINGS):
+            with open(GameController.SETTINGS, "r") as file:
+                jsonFile = json.loads(file.read())
+                gifFolder = jsonFile["gifFolder"]
+        else:
+            gifFolder = "Gif"
+        self.__randomGif = RandomGif(gifFolder)
 
     def motion(self):
         LocalGoalSound.motion(self)
         #Update view
-        self.view.setText(self.game.getResult())
+        self.__view.setText(self.game.getResult())
+        self.__view.visibleGifView(True)
+        self.__view.setGif(self.__randomGif.random())
+        #self.__view.visibleGifView(False)
+        threading.Thread(target=self.gifOff()).start()
+
+    def gifOff(self):
+        time.sleep(5)
+        self.__view.visibleGifView(False)
 
 
 class VisitorGoalSound(Game.VisitorGoal):
@@ -91,13 +111,28 @@ class VisitorGoalSound(Game.VisitorGoal):
 class VisitorGoalGraphic(VisitorGoalSound):
     def __init__(self, game, view):
         VisitorGoalSound.__init__(self, game)
-        self.view = view
+        self.__view = view
+
+        if os.path.exists(GameController.SETTINGS):
+            with open(GameController.SETTINGS, "r") as file:
+                jsonFile = json.loads(file.read())
+                gifFolder = jsonFile["gifFolder"]
+        else:
+            gifFolder = "Gif"
+        self.__randomGif = RandomGif(gifFolder)
 
     def motion(self):
         #Update view
         VisitorGoalSound.motion(self)
-        self.view.setText(self.game.getResult())
+        self.__view.setText(self.game.getResult())
+        self.__view.visibleGifView(True)
+        self.__view.setGif(self.__randomGif.random())
+        # self.__view.visibleGifView(False)
+        threading.Thread(target=self.gifOff()).start()
 
+    def gifOff(self):
+        time.sleep(5)
+        self.__view.visibleGifView(False)
 
 
 
