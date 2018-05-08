@@ -51,7 +51,7 @@ class MotionSensor(threading.Thread):
         while seguir:
             #Instead of synchronize the whole block
             with self.__lock:
-                seguir = self.__seguirThread
+                seguir = self.__seguirThread 
 
             if self.motion():
                 if not flag and self.__motionListener is not None:
