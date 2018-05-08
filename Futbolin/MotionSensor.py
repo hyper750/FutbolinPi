@@ -11,6 +11,7 @@ class MotionSensor(threading.Thread):
     def __init__(self, pin):
         threading.Thread.__init__(self)
         self.__pin = pin
+        self.__lock = threading.Lock()
         self.setup()
         self.__seguirThread = False
         self.__motionListener = None
@@ -35,15 +36,23 @@ class MotionSensor(threading.Thread):
             self.__motionListener = listener
 
     def threadIsRunning(self):
-        return self.__seguirThread
+        with self.__lock:
+            return self.__seguirThread
 
     def stopThread(self):
-        self.__seguirThread = False
+        with self.__lock:
+            self.__seguirThread = False
 
     def run(self):
-        self.__seguirThread = True
+        with self.__lock:
+            self.__seguirThread = True
+            seguir = self.__seguirThread
         flag = False
-        while self.__seguirThread:
+        while seguir:
+            #Instead of synchronize the whole block
+            with self.__lock:
+                seguir = self.__seguirThread
+
             if self.motion():
                 if not flag and self.__motionListener is not None:
                     self.__motionListener.motion()
