@@ -1,12 +1,16 @@
 import json
 import os
-import threading
 import time
+from pygame import mixer
+
+from Pooling import RestartListener, StartListener
 from RandomGif import RandomGif
-from RestartListener import RestartListener
 from Music import Music
 from Game import Game
 from GraphicInterface import MainWindow
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk, Gdk
 
 
 class GameController:
@@ -20,22 +24,20 @@ class GameController:
             visitorSensor = int(jsonFile["visitorPin"])
             restartSensor = int(jsonFile["restartPin"])
             stopSensor = int(jsonFile["stopPin"])
-            musicFolder = jsonFile["musicFolder"]
-            booSound = jsonFile["booSound"]
             booTime = jsonFile["booSoundTime"]
-            gifFolder = jsonFile["gifFolder"]
 
 
 
         self.view = MainWindow()
 
-        self.game = Game(balls, localSensor, visitorSensor, restartSensor, stopSensor, musicFolder, booSound, booTime)
+        self.game = Game(balls, localSensor, visitorSensor, restartSensor, stopSensor, booTime)
         # When you score a goal
         self.game.setLocalSensorListener(LocalGoalGraphic(self.game, self.view))
         self.game.setVisitorSensorListener(VisitorGoalGraphic(self.game, self.view))
-        self.game.setRestartSensorListener(RestartGoalSound(self.game))
+        self.game.setRestartSensorListener(RestartGoalGraphic(self.game, self.view))
         self.game.setStopSensorListener(StopGameGraphic(self.game, self.view))
         self.game.setRestartBooListener(RestartBoo(self.game))
+        self.game.setStartBooListener(StartBoo())
 
         # Start the game
         self.game.start()
@@ -52,14 +54,14 @@ class LocalGoalSound(Game.LocalGoal):
                 jsonFile = json.loads(file.read())
                 musicFolder = jsonFile["musicFolder"]
 
-        self.__music = Music(musicFolder)
+        self.music = Music(musicFolder)
 
     def motion(self):
-        finish = self.game.gameFinish()
         Game.LocalGoal.motion(self)
+        finish = self.game.gameFinish()
         if not finish:
             print("GOOL local!")
-            self.__music.random()
+            self.music.random()
 
 class LocalGoalGraphic(LocalGoalSound):
     def __init__(self, game, view):
@@ -76,15 +78,12 @@ class LocalGoalGraphic(LocalGoalSound):
 
     def motion(self):
         LocalGoalSound.motion(self)
-        #Update view
+        # Update view
         self.__view.setText(self.game.getResult())
-        self.__view.visibleGifView(True)
         self.__view.setGif(self.__randomGif.random())
-        #self.__view.visibleGifView(False)
-        threading.Thread(target=self.gifOff()).start()
-
-    def gifOff(self):
-        time.sleep(5)
+        self.__view.visibleGifView(True)
+        while self.music.isPlayingMusic():
+            time.sleep(0.1)
         self.__view.visibleGifView(False)
 
 
@@ -98,14 +97,14 @@ class VisitorGoalSound(Game.VisitorGoal):
                 jsonFile = json.loads(file.read())
                 musicFolder = jsonFile["musicFolder"]
 
-        self.__music = Music(musicFolder)
+        self.music = Music(musicFolder)
 
     def motion(self):
-        finish = self.game.gameFinish()
         Game.VisitorGoal.motion(self)
+        finish = self.game.gameFinish()
         if not finish:
             print("GOOL Visitant!")
-            self.__music.random()
+            self.music.random()
 
 
 class VisitorGoalGraphic(VisitorGoalSound):
@@ -125,13 +124,10 @@ class VisitorGoalGraphic(VisitorGoalSound):
         #Update view
         VisitorGoalSound.motion(self)
         self.__view.setText(self.game.getResult())
-        self.__view.visibleGifView(True)
         self.__view.setGif(self.__randomGif.random())
-        # self.__view.visibleGifView(False)
-        threading.Thread(target=self.gifOff()).start()
-
-    def gifOff(self):
-        time.sleep(5)
+        self.__view.visibleGifView(True)
+        while self.music.isPlayingMusic():
+            time.sleep(0.1)
         self.__view.visibleGifView(False)
 
 
@@ -155,6 +151,16 @@ class RestartGoalSound(Game.RestartGame):
         self.__music.play(self.__restartSound)
         print("Restarting score!")
 
+class RestartGoalGraphic(RestartGoalSound):
+    def __init__(self, game, view):
+        RestartGoalSound.__init__(self, game)
+        self.__view = view
+
+    def motion(self):
+        RestartGoalSound.motion(self)
+        self.__view.setText("0 - 0")
+
+
 
 class StopGame(Game.StopGame):
     def __init__(self, game):
@@ -176,7 +182,7 @@ class StopGame(Game.StopGame):
         print("PowerOff raspberry!")
         #W8 to finish the sound
         while self.__music.isPlayingMusic():
-            time.sleep(0.5)
+            time.sleep(0.1)
 
         #When the song finish, poweroff
         #os.system("poweroff")
@@ -189,16 +195,28 @@ class StopGameGraphic(StopGame):
 
     def motion(self):
         StopGame.motion(self)
-        self.__view.finishWindow()
+        Gtk.main_quit()
 
 
 class RestartBoo(RestartListener):
     def __init__(self, game):
-        self.game = game
-        self.result = self.game.getResult()
+        self.__game = game
+        self.__result = self.__game.getResult()
 
     def restart(self):
-        if self.game.getResult() != self.result:
-            self.result = self.game.getResult()
+        if self.__game.getResult() != self.__result or self.__game.gameFinish():
+            self.__result = self.__game.getResult()
+            #print("Reiniciar")
             return True
         return False
+
+class StartBoo(StartListener):
+    def __init__(self):
+        with open(GameController.SETTINGS, "r") as file:
+            jsonFile = json.loads(file.read())
+            self.__song = jsonFile["booSound"]
+            folder = jsonFile["musicFolder"]
+        self.__music = Music(folder)
+
+    def start(self):
+        self.__music.play(self.__song)

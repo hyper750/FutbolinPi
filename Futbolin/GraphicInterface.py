@@ -47,9 +47,9 @@ class MainWindow(Gtk.Window):
         #self.gifViewer.set_from_file("Gif/propia.gif")
         self.gifViewer.set_hexpand(True)
         layout.attach(self.gifViewer, 0, 1, 1, 1)
-
+        Gdk.threads_init()
         self.show_all()
-        self.gifViewer.set_visible(False)
+
 
         #X Column, Y Row, Width, Height
         '''layout.attach(gtk.Button("Hola"), 0, 0, 1, 1)
@@ -70,17 +70,24 @@ class MainWindow(Gtk.Window):
         print("Hello World")'''
 
     def setText(self, text):
+        #glib.idle_add(self.scoreLabel.set_text, text)
+        Gdk.threads_enter()
         self.scoreLabel.set_text(text)
+        Gdk.threads_leave()
 
     def setGif(self, gif):
-        self.gifViewer.set_from_file(gif)
+        #glib.idle_add(self.gifViewer.set_from_file, gif)
+        Gdk.threads_enter()
+        #self.gifViewer.set_from_file(gif)
+        self.gifViewer.set_from_animation(gif)
+        Gdk.threads_leave()
 
     def visibleGifView(self, boolean):
+        #glib.idle_add(self.gifViewer.set_visible, boolean)
+        Gdk.threads_enter()
         self.gifViewer.set_visible(boolean)
+        Gdk.threads_leave()
 
-    def finishWindow(self):
-        self.destroy()
-        Gtk.main_quit()
 
 
 

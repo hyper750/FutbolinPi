@@ -1,19 +1,19 @@
 import threading
-from SongPooling import SongPooling
 from MotionListener import MotionListener
 from MotionSensor import MotionSensor
+from Pooling import Pooling
 
 
-class Game(threading.Thread):
-    def __init__(self, balls, localPin, visitorPin, restartPin, stopPin, folder, booSound, booTime):
-        threading.Thread.__init__(self)
+class Game:
+    def __init__(self, balls, localPin, visitorPin, restartPin, stopPin, booTime):
+        self.__lock = threading.Lock()
         #Default 7 balls, without sensors
         self.__balls = balls
         self.__localSensor = MotionSensor(localPin)
         self.__visitorSensor = MotionSensor(visitorPin)
         self.__restartSensor = MotionSensor(restartPin)
         self.__stopSensor = MotionSensor(stopPin)
-        self.__jeer = SongPooling(folder, booSound, booTime)
+        self.__jeer = Pooling(booTime)
 
         self.__playing = False
 
@@ -32,6 +32,7 @@ class Game(threading.Thread):
         # What to do when you stop the game
         self.setStopSensorListener(Game.StopGame(self))
 
+
     def start(self):
         if self.__localSensor is None or self.__visitorSensor is None or self.__restartSensor is None or self.__stopSensor is None:
             print("First you need to initiate all the sensors")
@@ -42,7 +43,8 @@ class Game(threading.Thread):
         self.__restartSensor.start()
         self.__stopSensor.start()
         self.__jeer.start()
-        self.__playing = True
+        with self.__lock:
+            self.__playing = True
 
     def stop(self):
         self.__localSensor.stopThread()
@@ -50,37 +52,46 @@ class Game(threading.Thread):
         self.__restartSensor.stopThread()
         self.__stopSensor.stopThread()
         self.__jeer.stopThread()
-        self.__playing = False
+        with self.__lock:
+            self.__playing = False
 
     def restart(self):
-        self.__visitorScore = 0
-        self.__localScore = 0
+        with self.__lock:
+            self.__visitorScore = 0
+            self.__localScore = 0
 
     def isPlaying(self):
-        return self.__playing
+        with self.__lock:
+            return self.__playing
 
     def gameFinish(self):
-        return (self.__visitorScore + self.__localScore) == self.__balls
+        with self.__lock:
+            return (self.__visitorScore + self.__localScore) == self.__balls
 
     def addLocalScore(self):
         if not self.gameFinish():
-            self.__localScore += 1
+            with self.__lock:
+                self.__localScore += 1
 
     def addVisitorScore(self):
         if not self.gameFinish():
-            self.__visitorScore += 1
+            with self.__lock:
+                self.__visitorScore += 1
 
     def getResult(self):
-        return str(self.__localScore) + " - " + str(self.__visitorScore)
+        with self.__lock:
+            return str(self.__localScore) + " - " + str(self.__visitorScore)
 
     def getLocalScore(self):
         return self.__localScore
 
     def getVisitorScore(self):
-        return self.__visitorScore
+        with self.__lock:
+            return self.__visitorScore
 
     def getTotalBalls(self):
-        return self.__balls
+        with self.__lock:
+            return self.__balls
 
     def setLocalSensorListener(self, listener):
         self.__localSensor.setMotionListener(listener)
@@ -96,6 +107,9 @@ class Game(threading.Thread):
 
     def setRestartBooListener(self, listener):
         self.__jeer.setRestartListener(listener)
+
+    def setStartBooListener(self, listener):
+        self.__jeer.setStartListener(listener)
 
     class LocalGoal(MotionListener):
         def __init__(self, game):

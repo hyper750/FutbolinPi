@@ -1,7 +1,7 @@
 import json
 import time
 from Game import Game
-from GameController import LocalGoalSound, VisitorGoalSound, RestartGoalSound, StopGame, GameController, RestartBoo
+from GameController import LocalGoalSound, VisitorGoalSound, RestartGoalSound, StopGame, GameController, RestartBoo, StartBoo
 
 if __name__ == "__main__":
     with open(GameController.SETTINGS, "r") as file:
@@ -15,13 +15,14 @@ if __name__ == "__main__":
         booSound = jsonFile["booSound"]
         booTime = jsonFile["booSoundTime"]
 
-    game = Game(balls, localSensor, visitorSensor, restartSensor, stopSensor, musicFolder, booSound, booTime)
+    game = Game(balls, localSensor, visitorSensor, restartSensor, stopSensor, booTime)
     #When you score a goal
     game.setLocalSensorListener(LocalGoalSound(game))
     game.setVisitorSensorListener(VisitorGoalSound(game))
     game.setRestartSensorListener(RestartGoalSound(game))
     game.setStopSensorListener(StopGame(game))
     game.setRestartBooListener(RestartBoo(game))
+    game.setStartBooListener(StartBoo())
 
     #Start the game
     game.start()
