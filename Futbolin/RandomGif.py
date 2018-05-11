@@ -24,7 +24,8 @@ class RandomGif(threading.Thread):
             self.__gifFiles = [os.path.join(self.__gifFolder, gif) for gif in os.listdir(self.__gifFolder)
                                       if os.path.isfile(os.path.join(self.__gifFolder, gif)) and
                                       gif.__str__().split(".")[-1] in self.EXTENSIONS]
-            self.__gifPixbuf = []
+            randomNumber = randint(0, len(self.__gifFiles) - 1)
+            self.__gifPixbuf = [GdkPixbuf.PixbufAnimation.new_from_file(self.__gifFiles[randomNumber])]
 
 
     def run(self):

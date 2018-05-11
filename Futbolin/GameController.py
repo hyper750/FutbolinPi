@@ -53,6 +53,7 @@ class LocalGoalSound(Game.LocalGoal):
             with open(GameController.SETTINGS, "r") as file:
                 jsonFile = json.loads(file.read())
                 musicFolder = jsonFile["musicFolder"]
+                self.finSong = jsonFile['restartSound']
 
         self.music = Music(musicFolder)
 
@@ -60,8 +61,11 @@ class LocalGoalSound(Game.LocalGoal):
         Game.LocalGoal.motion(self)
         #finish = self.game.gameFinish()
         #if not finish:
-        print("GOOL local!")
-        self.music.random()
+        if not self.game.gameFinish():
+            print("GOOL local!")
+            self.music.random()
+        else:
+            self.music.play(self.finSong)
 
 class LocalGoalGraphic(LocalGoalSound):
     def __init__(self, game, view):
@@ -85,14 +89,6 @@ class LocalGoalGraphic(LocalGoalSound):
         self.__view.setGif(self.__randomGif.random())
         self.__endMusic.startGif()
 
-    '''def gif(self):
-        self.__view.setText(self.game.getResult())
-        self.__view.setGif(self.__randomGif.random())
-        self.__view.visibleGifView(True)
-        while self.music.isPlayingMusic():
-            time.sleep(0.1)
-        self.__view.visibleGifView(False)'''
-
 
 class VisitorGoalSound(Game.VisitorGoal):
     def __init__(self, game):
@@ -103,15 +99,19 @@ class VisitorGoalSound(Game.VisitorGoal):
             with open(GameController.SETTINGS, "r") as file:
                 jsonFile = json.loads(file.read())
                 musicFolder = jsonFile["musicFolder"]
+                self.finSong = jsonFile['restartSound']
 
         self.music = Music(musicFolder)
 
     def motion(self):
         Game.VisitorGoal.motion(self)
-        #finish = self.game.gameFinish()
-        #if not finish:
-        print("GOOL Visitant!")
-        self.music.random()
+        # finish = self.game.gameFinish()
+        # if not finish:
+        if not self.game.gameFinish():
+            print("GOOL visitant!")
+            self.music.random()
+        else:
+            self.music.play(self.finSong)
 
 
 class VisitorGoalGraphic(VisitorGoalSound):
@@ -137,15 +137,6 @@ class VisitorGoalGraphic(VisitorGoalSound):
         self.__endMusic.startGif()
 
 
-    '''def gif(self):
-        self.__view.setText(self.game.getResult())
-        self.__view.setGif(self.__randomGif.random())
-        self.__view.visibleGifView(True)
-        while self.music.isPlayingMusic():
-            time.sleep(0.1)
-        self.__view.visibleGifView(False)'''
-
-
 
 class RestartGoalSound(Game.RestartGame):
     def __init__(self, game):
@@ -165,14 +156,15 @@ class RestartGoalSound(Game.RestartGame):
         Game.RestartGame.motion(self)
         self.__music.play(self.__restartSound)
         print("Restarting score!")
-
-class RestartGoalGraphic(RestartGoalSound):
+                        #RestartGoalSound but Game.RestartGame for no sound on restart
+class RestartGoalGraphic(Game.RestartGame):
     def __init__(self, game, view):
-        RestartGoalSound.__init__(self, game)
+        Game.RestartGame.__init__(self, game)
         self.__view = view
 
     def motion(self):
-        RestartGoalSound.motion(self)
+        Game.RestartGame.motion(self)
+        mixer.music.stop()
         self.__view.setText(self.game.getResult())
 
 
