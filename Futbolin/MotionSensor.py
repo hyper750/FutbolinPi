@@ -25,9 +25,6 @@ class MotionSensor(threading.Thread):
     def motion(self):
         return gpio.input(self.__pin)
 
-    def __del__(self):
-        self.cleanUp()
-
     def __str__(self):
         return "Motion sensor pin " + str(self.__pin)
 
@@ -61,3 +58,6 @@ class MotionSensor(threading.Thread):
                 flag = False
 
             time.sleep(self.POLLING_TIME)
+
+        #print("MOTION SENSOR ACABAT")
+        self.cleanUp()

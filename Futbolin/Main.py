@@ -11,12 +11,10 @@ if __name__ == "__main__":
         visitorSensor = int(jsonFile["visitorPin"])
         restartSensor = int(jsonFile["restartPin"])
         stopSensor = int(jsonFile["stopPin"])
-        musicFolder = jsonFile["musicFolder"]
-        booSound = jsonFile["booSound"]
         booTime = jsonFile["booSoundTime"]
 
     game = Game(balls, localSensor, visitorSensor, restartSensor, stopSensor, booTime)
-    #When you score a goal
+    # When you score a goal
     game.setLocalSensorListener(LocalGoalSound(game))
     game.setVisitorSensorListener(VisitorGoalSound(game))
     game.setRestartSensorListener(RestartGoalSound(game))
@@ -24,7 +22,7 @@ if __name__ == "__main__":
     game.setRestartBooListener(RestartBoo(game))
     game.setStartBooListener(StartBoo())
 
-    #Start the game
+    # Start the game
     game.start()
 
     #When i push the stop button the python and raspberry stops

@@ -69,14 +69,14 @@ class Game:
             return (self.__visitorScore + self.__localScore) == self.__balls
 
     def addLocalScore(self):
-        if not self.gameFinish():
-            with self.__lock:
-                self.__localScore += 1
+        #if not self.gameFinish():
+        with self.__lock:
+            self.__localScore += 1
 
     def addVisitorScore(self):
-        if not self.gameFinish():
-            with self.__lock:
-                self.__visitorScore += 1
+        #if not self.gameFinish():
+        with self.__lock:
+            self.__visitorScore += 1
 
     def getResult(self):
         with self.__lock:
@@ -127,10 +127,10 @@ class Game:
 
     class RestartGame(MotionListener):
         def __init__(self, game):
-            self.__game = game
+            self.game = game
 
         def motion(self):
-            self.__game.restart()
+            self.game.restart()
 
     class StopGame(MotionListener):
         def __init__(self, game):

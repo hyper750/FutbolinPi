@@ -65,3 +65,4 @@ class Pooling(threading.Thread):
 
             if seguir and self.__startListener is not None:
                 self.__startListener.start()
+        #print("Fin pooling")

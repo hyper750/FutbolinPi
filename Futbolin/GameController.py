@@ -2,7 +2,7 @@ import json
 import os
 import time
 from pygame import mixer
-
+from EndMusicEndGif import EndMusicEndgif
 from Pooling import RestartListener, StartListener
 from RandomGif import RandomGif
 from Music import Music
@@ -58,10 +58,10 @@ class LocalGoalSound(Game.LocalGoal):
 
     def motion(self):
         Game.LocalGoal.motion(self)
-        finish = self.game.gameFinish()
-        if not finish:
-            print("GOOL local!")
-            self.music.random()
+        #finish = self.game.gameFinish()
+        #if not finish:
+        print("GOOL local!")
+        self.music.random()
 
 class LocalGoalGraphic(LocalGoalSound):
     def __init__(self, game, view):
@@ -74,17 +74,24 @@ class LocalGoalGraphic(LocalGoalSound):
                 gifFolder = jsonFile["gifFolder"]
         else:
             gifFolder = "Gif"
-        self.__randomGif = RandomGif(gifFolder)
+
+        self.__randomGif = RandomGif.getInstance(gifFolder)
+        self.__endMusic = EndMusicEndgif.getInstance(view)
 
     def motion(self):
         LocalGoalSound.motion(self)
-        # Update view
+        #self.__view.visibleGifView(True)
+        self.__view.setText(self.game.getResult())
+        self.__view.setGif(self.__randomGif.random())
+        self.__endMusic.startGif()
+
+    '''def gif(self):
         self.__view.setText(self.game.getResult())
         self.__view.setGif(self.__randomGif.random())
         self.__view.visibleGifView(True)
         while self.music.isPlayingMusic():
             time.sleep(0.1)
-        self.__view.visibleGifView(False)
+        self.__view.visibleGifView(False)'''
 
 
 class VisitorGoalSound(Game.VisitorGoal):
@@ -101,10 +108,10 @@ class VisitorGoalSound(Game.VisitorGoal):
 
     def motion(self):
         Game.VisitorGoal.motion(self)
-        finish = self.game.gameFinish()
-        if not finish:
-            print("GOOL Visitant!")
-            self.music.random()
+        #finish = self.game.gameFinish()
+        #if not finish:
+        print("GOOL Visitant!")
+        self.music.random()
 
 
 class VisitorGoalGraphic(VisitorGoalSound):
@@ -118,17 +125,25 @@ class VisitorGoalGraphic(VisitorGoalSound):
                 gifFolder = jsonFile["gifFolder"]
         else:
             gifFolder = "Gif"
-        self.__randomGif = RandomGif(gifFolder)
+        self.__randomGif = RandomGif.getInstance(gifFolder)
+        self.__endMusic = EndMusicEndgif.getInstance(view)
 
     def motion(self):
         #Update view
         VisitorGoalSound.motion(self)
+        #self.__view.visibleGifView(True)
+        self.__view.setText(self.game.getResult())
+        self.__view.setGif(self.__randomGif.random())
+        self.__endMusic.startGif()
+
+
+    '''def gif(self):
         self.__view.setText(self.game.getResult())
         self.__view.setGif(self.__randomGif.random())
         self.__view.visibleGifView(True)
         while self.music.isPlayingMusic():
             time.sleep(0.1)
-        self.__view.visibleGifView(False)
+        self.__view.visibleGifView(False)'''
 
 
 
@@ -158,7 +173,7 @@ class RestartGoalGraphic(RestartGoalSound):
 
     def motion(self):
         RestartGoalSound.motion(self)
-        self.__view.setText("0 - 0")
+        self.__view.setText(self.game.getResult())
 
 
 
@@ -179,10 +194,10 @@ class StopGame(Game.StopGame):
     def motion(self):
         Game.StopGame.motion(self)
         self.__music.play(self.__stopSound)
-        print("PowerOff raspberry!")
         #W8 to finish the sound
         while self.__music.isPlayingMusic():
             time.sleep(0.1)
+        print("PowerOff raspberry!")
 
         #When the song finish, poweroff
         #os.system("poweroff")
@@ -195,6 +210,10 @@ class StopGameGraphic(StopGame):
 
     def motion(self):
         StopGame.motion(self)
+        EndMusicEndgif.getInstance(self.__view).stopThread()
+        RandomGif.getInstance("").stopThread()
+        #Need a join to not update the view when is destroy it
+        EndMusicEndgif.getInstance(self.__view).join()
         Gtk.main_quit()
 
 
@@ -204,7 +223,7 @@ class RestartBoo(RestartListener):
         self.__result = self.__game.getResult()
 
     def restart(self):
-        if self.__game.getResult() != self.__result or self.__game.gameFinish():
+        if self.__game.getResult() != self.__result or self.__game.gameFinish() or mixer.music.get_busy():
             self.__result = self.__game.getResult()
             #print("Reiniciar")
             return True

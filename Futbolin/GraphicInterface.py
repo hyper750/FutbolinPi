@@ -77,10 +77,11 @@ class MainWindow(Gtk.Window):
 
     def setGif(self, gif):
         #glib.idle_add(self.gifViewer.set_from_file, gif)
-        Gdk.threads_enter()
         #self.gifViewer.set_from_file(gif)
-        self.gifViewer.set_from_animation(gif)
-        Gdk.threads_leave()
+        if gif is not None:
+            Gdk.threads_enter()
+            self.gifViewer.set_from_animation(gif)
+            Gdk.threads_leave()
 
     def visibleGifView(self, boolean):
         #glib.idle_add(self.gifViewer.set_visible, boolean)
