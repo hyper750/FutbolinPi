@@ -192,7 +192,7 @@ class StopGame(Game.StopGame):
         print("PowerOff raspberry!")
 
         #When the song finish, poweroff
-        #os.system("poweroff")
+        os.system("poweroff")
 
 
 class StopGameGraphic(StopGame):
@@ -207,6 +207,7 @@ class StopGameGraphic(StopGame):
         #Need a join to not update the view when is destroy it
         EndMusicEndgif.getInstance(self.__view).join()
         Gtk.main_quit()
+        #os.system("poweroff")
 
 
 class RestartBoo(RestartListener):

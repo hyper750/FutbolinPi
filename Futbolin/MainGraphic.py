@@ -1,3 +1,5 @@
+import threading
+import time
 from GameController import GameController
 import gi
 gi.require_version('Gtk', '3.0')
@@ -7,9 +9,10 @@ if __name__ == "__main__":
     gameController = GameController()
     Gtk.main()
 
-    '''while len(threading.enumerate()) > 1:
+    #Threading list
+    while len(threading.enumerate()) > 1:
         for t in threading.enumerate():
             print(t)
 
+        print("-----------------")
         time.sleep(2)
-        print("-----------------")'''

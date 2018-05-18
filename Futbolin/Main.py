@@ -22,6 +22,15 @@ if __name__ == "__main__":
     game.setRestartBooListener(RestartBoo(game))
     game.setStartBooListener(StartBoo())
 
+    game = Game(balls, localSensor, visitorSensor, restartSensor, stopSensor, booTime)
+    # When you score a goal
+    game.setLocalSensorListener(LocalGoalSound(game))
+    game.setVisitorSensorListener(VisitorGoalSound(game))
+    game.setRestartSensorListener(RestartGoalSound(game))
+    game.setStopSensorListener(StopGame(game))
+    game.setRestartBooListener(RestartBoo(game))
+    game.setStartBooListener(StartBoo())
+
     # Start the game
     game.start()
 

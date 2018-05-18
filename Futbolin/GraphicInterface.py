@@ -12,7 +12,6 @@ class MainWindow(Gtk.Window):
         self.set_icon_from_file("Image/icon64.png")
         self.connect("destroy", Gtk.main_quit)
         self.set_default_size(600, 800)
-        #self.set_position(Gtk.WIN_POS_CENTER)
         self.fullscreen()
 
         styleProvider = Gtk.CssProvider()
@@ -48,6 +47,11 @@ class MainWindow(Gtk.Window):
         self.gifViewer.set_hexpand(True)
         layout.attach(self.gifViewer, 0, 1, 1, 1)
         Gdk.threads_init()
+
+        #Disable cursor
+
+
+
         self.show_all()
 
 
@@ -89,9 +93,6 @@ class MainWindow(Gtk.Window):
         self.gifViewer.set_visible(boolean)
         Gdk.threads_leave()
 
-
-
-
 '''if __name__ == '__main__':
-    win = MainWindow("")
+    win = MainWindow()
     Gtk.main()'''
